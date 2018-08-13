@@ -24,10 +24,45 @@ app.listen(port, ()=> {
 });
 
 
+// Testing get reuest
+// const test = async () => {
+//   const data = await getRates();
+//   console.log(data);
+// }
 
-const test = async () => {
-  const data = await getRates();
-  console.log(data);
+// test();
+
+// Express Error Handler
+const errorHandler = (err, req, res) => {
+  if(err.response) {
+    // The request was made and the server responded with a status code that falls out of the range of 2XX
+    res.status(403).send({
+      title: 'Server responded with an error',
+      message: err.message
+    });
+  } else if(err.request) {
+    // The request was made but no response was received 
+    res.status(503).send({
+      title: 'Unable to communicate with server',
+      message: err.message
+    })
+  } else {
+    //Something happened in setting up the request that triggered an Error
+    res.status(500).send({
+      title: 'An unexpected error occured',
+      message: err.message
+    })
+  }
 }
 
-test();
+
+// Fetch Lates Currency Rates
+app.get('/api/rates', async (req, res) => {
+  try {
+    const data = await getRates();
+    res.setHeader('Content-Type', 'application/json');
+    res.send(data);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+});
