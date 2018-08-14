@@ -15,6 +15,17 @@ app.use(express.static('public'));
 //Allow front-end access to node_modules folder
 app.use('/scripts', express.static(`${__dirname}/node_modules/`));
 
+// Fetch Lates Currency Rates
+app.get('/api/rates', async (req, res) => {
+  try {
+    const data = await getRates();
+    res.setHeader('Content-Type', 'application/json');
+    res.send(data);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+});
+
 // Redirect all traffic to index.html
 app.use((req, res)=> res.sendFile(`${__dirname}/public/index.html`));
 
@@ -56,13 +67,3 @@ const errorHandler = (err, req, res) => {
 }
 
 
-// Fetch Lates Currency Rates
-app.get('/api/rates', async (req, res) => {
-  try {
-    const data = await getRates();
-    res.setHeader('Content-Type', 'application/json');
-    res.send(data);
-  } catch (error) {
-    errorHandler(error, req, res);
-  }
-});
