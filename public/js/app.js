@@ -36,6 +36,8 @@ window.addEventListener('load', ()=> {
     el.html(html);
   };
 
+  
+
 
 
   router.add('/', async () => {
