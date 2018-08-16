@@ -4,6 +4,7 @@ const { getRates, getSymbols } = require('./lib/fixer-service');
 const { convertCurrency } = require('./lib/free-currency-service');
 
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,6 +16,14 @@ app.use(express.static('public'));
 
 //Allow front-end access to node_modules folder
 app.use('/scripts', express.static(`${__dirname}/node_modules/`));
+
+// Parse POST data as URL encoded data
+app.use(bodyParser.urlencoded({
+  extended: true,
+}));
+
+// Parse POST data as JSON
+app.use(bodyParser.json());
 
 // Fetch Lates Currency Rates
 app.get('/api/rates', async (req, res) => {
@@ -39,9 +48,9 @@ app.get('/api/symbols', async (req, res) => {
 });
 
 //Covert Currency
-app.get('/api/convert', async (req, res) => {
+app.post('/api/convert', async (req, res) => {
   try {
-    const { val, to } = req.body;
+    const { from, to } = req.body;
     const data = await convertCurrency(from, to);
     res.setHeader('Content-Type', 'application/json');
     res.send(data)
